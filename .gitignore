@@ -9,6 +9,9 @@ staticfiles
 *.pyc
 .DS_Store
 
+# static vendor
+static/vendor/*
+
 # If you are using Django with PostgreSQL
 *.dump
 
