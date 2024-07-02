@@ -41,11 +41,11 @@
         </div>
         <div class="col-md-6">
             <div class="input-group mb-3">
-                <select class="form-control js-example-basic-single" data-placeholder="Search or select doctor">
+                <select class="form-control js-example-basic-single" id="doctor_options" data-placeholder="Search or select doctor">
                     <option></option>
-                    <option value="1">John Doe</option>
-                    <option value="2">Jane Smith</option>
-                    <option value="3">Michael Johnson</option>
+                    {% for d in doctors %}
+                    <option value="{{ d.id }}">{{ d.name }}</option>
+                    {% endfor %}
                 </select>
                 <div class="input-group-append">
                     <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#addDoctorModal">Add Doctor</button>
@@ -92,14 +92,14 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="" method="post">
+                <form id="doctor_form" method="post">
                     {% csrf_token %}
                     {{ d_form.as_p }}
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save Doctor</button>
+                <button type="button" class="btn btn-primary" id="add_doctor">Save Doctor</button>
             </div>
         </div>
     </div>
@@ -125,34 +125,34 @@
 
         $('#add_customer').on('click', function(){
             // Validate name and phone fields
-            var name = $('#id_name').val().trim();
-            var phone = $('#id_phone').val().trim();
-            var address = $('#id_address').val().trim();
-            var gender = $('#id_gender').val().trim();
+            var name = $('#addCustomerModal #id_name').val().trim();
+            var phone = $('#addCustomerModal #id_phone').val().trim();
+            var address = $('#addCustomerModal #id_address').val().trim();
+            var gender = $('#addCustomerModal #id_gender').val().trim();
 
             if (!name ) {
-                $('#id_name').css('border', '1px solid red');
+                $('#addCustomerModal #id_name').css('border', '1px solid red');
                 return;
             }else{
-                $('#id_name').css('border', '');
+                $('#addCustomerModal #id_name').css('border', '');
             }
             if (!phone ) {
-                $('#id_phone').css('border', '1px solid red');
+                $('#addCustomerModal #id_phone').css('border', '1px solid red');
                 return;
             }else{
-                $('#id_phone').css('border', '');
+                $('#addCustomerModal #id_phone').css('border', '');
             }
             if (!gender ) {
-                $('#id_gender').css('border', '1px solid red');
+                $('#addCustomerModal #id_gender').css('border', '1px solid red');
                 return;
             }else{
-                $('#id_gender').css('border', '');
+                $('#addCustomerModal #id_gender').css('border', '');
             }
             if (!address ) {
-                $('#id_address').css('border', '1px solid red');
+                $('#addCustomerModal #id_address').css('border', '1px solid red');
                 return;
             }else{
-                $('#id_address').css('border', '');
+                $('#addCustomerModal #id_address').css('border', '');
             }
 
             var formData = $('#customer_form').serialize();
@@ -190,6 +190,56 @@
                 }
             });
         })
+
+        $('#add_doctor').on('click', function(){
+            // Validate name and phone fields
+            var name = $('#addDoctorModal #id_name').val().trim();
+
+            if (!name ) {
+                $('#addDoctorModal #id_name').css('border', '1px solid red');
+                return;
+            }else{
+                $('#addDoctorModal #id_name').css('border', '');
+            }
+
+            var formData = $('#doctor_form').serialize();
+            $.ajax({
+                url: "{% url 'doctor' %}",  
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.success){
+                        $('#addDoctorModal').modal('hide');
+                        // Add the new customer to the top of the select dropdown and make it selected
+                        var selectElement = $('#doctor_options');
+                        addOptionToSelect(selectElement, response.doctor.name, response.doctor.id);
+                        
+                        Swal.fire({
+                            title: "Success", 
+                            text: response.message,  
+                            icon: "success"
+                        });
+
+                    }else{
+                        Swal.fire({
+                            title: "Error", 
+                            text: response.message,  
+                            icon: "error"
+                        });
+                    }
+                },
+                error: function(error) {
+                    Swal.fire({
+                        title: "Error", 
+                        text: error.message,  
+                        icon: "error"
+                    });
+                }
+            });
+        })
+
+
+
         
     });
 </script>

@@ -1,6 +1,5 @@
 from django.http import JsonResponse
 from lab.forms.customer import CustomerForm
-from lab.models.customer import Customer
 
 def customer(request):
     if request.method == 'POST':
@@ -29,4 +28,7 @@ def customer(request):
             'city': 'New York',
         }
         return JsonResponse(data)
+    
+
+    
     
