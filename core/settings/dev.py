@@ -1,4 +1,4 @@
-from .base import *
+from core.settings.base import *
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
